@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pocket Coach | Summer Athlete Program</title>
+  <link rel="stylesheet" href="style.css" />
+
+  <script>
+    // Redirect to index.html if page is reloaded
+    window.addEventListener("load", function () {
+      if (performance.navigation.type === 1) {
+        window.location.href = "quiz.html";
+      }
+    });
+  </script>
+</head>
+<body>
+
+<section class="hero-section">
+
+  <!-- Top-Left Titel -->
+  <div class="top-left-text">
+    <div class="top-line1">Pocket Coach Summer Athlete Program</div>
+    <div class="top-line2">by Cyrus Corbet</div>
+  </div>
+
+  <!-- Abstandhalter -->
+  <div class="top-spacer"></div>
+
+  <!-- Cyrus-Bereich -->
+  <div class="cyrus-wrapper">
+
+    <div class="cyrus-image-container">
+
+      <!-- Hinweis -->
+      <div class="click-video-hint" id="clickHint">
+        <div class="click-text">Click Video</div>
+        <img src="arrow.png" alt="Arrow" class="click-arrow-img" />
+      </div>
+
+      <!-- Video-Container -->
+      <div class="vertical-media-box">
+        <img src="cyrusjacked.png" alt="Cyrus Poster" class="poster-img" id="posterImg" onclick="playVideo()" />
+        <video id="hero-video" class="video-player" controls style="display: none;">
+          <source src="explainSAP.mp4" type="video/mp4" />
+        </video>
+        <div class="play-button" id="playBtn" onclick="playVideo()">&#9658;</div>
+      </div>
+
+      <!-- Welcome Text -->
+      <div class="hero-content" id="heroText">
+        <div class="welcome-line1">Welcome to the <br /> Summer Athlete Program</div>
+        <div class="welcome-line2">Unlock your full potential today!</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll Hinweis (oben) -->
+  <a href="#" class="scroll-prompt" onclick="scrollToBenefits(event)">
+    Scroll for more<br />&#x25BC;
+  </a>
+
+</section>
+
+<!-- Benefits Section -->
+<section id="benefits" class="benefits-section">
+  <h2 class="benefits-title">What You’ll Get</h2>
+  <div class="benefits-list">
+    <div class="benefit-box">
+      <h3>🏋️ Personalized Workouts</h3>
+      <p>Training plans designed just for your goals and schedule.</p>
+    </div>
+    <div class="benefit-box">
+      <h3>🥗 Nutrition Tips</h3>
+      <p>Simple guidance to fuel your body the right way.</p>
+    </div>
+    <div class="benefit-box">
+      <h3>💡 Direct Coaching</h3>
+      <p>Learn from Cyrus and apply what really works.</p>
+    </div>
+    <div class="benefit-box">
+      <h3>📈 Real Results</h3>
+      <p>Track progress and see visible transformation.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Free Workout CTA -->
+<div class="free-workout-cta">
+  <a href="freeworkoutgate.html" class="btn-primary">Claim Your Free Workout</a>
+</div>
+
+<div style="text-align:center; color:#fff; margin: 10px 0; font-weight:bold; font-size:1.2rem;">OR</div>
+
+<!-- Scroll Attention Pfeil über Join Now -->
+<div class="join-cta-bounce">
+  <span>&#x25BC;</span>
+</div>
+
+<!-- Finaler CTA -->
+<div class="cta-group final-cta">
+  <a href="https://www.instagram.com/pocketcoachsnow/" class="btn-primary">Train with Cyrus</a>
+  <img src="logo.png" alt="Pocket Coach Logo" class="logo-next-btn" />
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+  © 2025 Pocket Coach | All Rights Reserved | Built by 
+  <a href="https://sites.google.com/986productions.online/mauricecreating/meine-arbeit?authuser=0" target="_blank">MauriceCreating</a>
+  | <a href="privacy.html" target="_blank">Privacy Policy</a> | <a href="datenschutz.html" target="_blank">Datenschutz</a>
+</footer>
+
+
+<!-- JavaScript -->
+<script>
+  function playVideo() {
+    const video = document.getElementById('hero-video');
+    const poster = document.getElementById('posterImg');
+    const playBtn = document.getElementById('playBtn');
+    const clickHint = document.getElementById('clickHint');
+    const heroText = document.getElementById('heroText');
+
+    poster.style.display = 'none';
+    playBtn.style.display = 'none';
+    clickHint.style.display = 'none';
+    heroText.style.display = 'none';
+
+    video.style.display = 'block';
+    video.play();
+
+    video.onended = () => {
+      video.style.display = 'none';
+      poster.style.display = 'block';
+      playBtn.style.display = 'block';
+      clickHint.style.display = 'flex';
+      heroText.style.display = 'block';
+    };
+  }
+
+  function scrollToBenefits(e) {
+    e.preventDefault();
+    const target = document.getElementById('benefits');
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+</script>
+<script src="formhandler.js"></script>
+
+</body>
+</html>

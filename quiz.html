@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quick Quiz | Pocket Coach</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="quiz-background">
+  <div class="quiz-wrapper" id="quizWrapper">
+    <img src="logo.png" alt="Pocket Coach Logo" class="quiz-logo" />
+    <div class="progress-container" id="progressContainer">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div class="quiz-box">
+      <div class="quiz-question" id="question">What is your primary goal?</div>
+      <div class="quiz-options" id="options">
+        <button class="quiz-btn red" onclick="nextQuestion('Muscle Gain')">Muscle Gain</button>
+        <button class="quiz-btn blue" onclick="nextQuestion('Get Fitter')">Get Fitter</button>
+        <button class="quiz-btn yellow" onclick="nextQuestion('Lose Weight')">Lose Weight</button>
+        <button class="quiz-btn green" onclick="nextQuestion('Boost Performance')">Boost Performance</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let step = 0;
+    let answers = {};
+
+    function updateProgress(forced) {
+      const progressBar = document.getElementById("progressBar");
+      if (!progressBar) return;
+      const steps = 3;
+      const percent = forced !== undefined ? forced : Math.min((step / steps) * 100, 100);
+      progressBar.style.width = percent + "%";
+    }
+
+    function nextQuestion(answer) {
+      step++;
+      updateProgress();
+
+      if (step === 1) {
+        answers.goal = answer;
+        document.getElementById("question").innerText = "How many times per week do you currently train?";
+        document.getElementById("options").innerHTML = `
+          <button class="quiz-btn red" onclick="nextQuestion('0–1x')">0–1x</button>
+          <button class="quiz-btn blue" onclick="nextQuestion('2–3x')">2–3x</button>
+          <button class="quiz-btn yellow" onclick="nextQuestion('4–5x')">4–5x</button>
+          <button class="quiz-btn green" onclick="nextQuestion('6+x')">6+x</button>
+        `;
+      } else if (step === 2) {
+        answers.frequency = answer;
+        document.getElementById("question").innerText = "What are you most interested in?";
+        document.getElementById("options").innerHTML = `
+          <button class="quiz-btn red" onclick="nextQuestion('Workouts')">Custom Workouts</button>
+          <button class="quiz-btn blue" onclick="nextQuestion('Nutrition')">Nutrition Tips</button>
+          <button class="quiz-btn yellow" onclick="nextQuestion('Mindset')">Mindset & Motivation</button>
+        `;
+      } else if (step === 3) {
+        answers.interest = answer;
+        showCTA();
+      }
+    }
+
+    function showCTA() {
+      document.getElementById("progressContainer").style.display = "none";
+
+      const frequencyText = answers.frequency;
+      const adviceText = frequencyText === "6+x"
+        ? `Wow, you train ${frequencyText.toLowerCase()} per week – that's impressive! Just remember: your body also needs recovery to grow.`
+        : `You train ${frequencyText.toLowerCase()} per week – that's already a great step! We recommend doing something for your body every day – consistency is key 💪`;
+
+      document.getElementById("quizWrapper").innerHTML = `
+        <img src="logo.png" alt="Pocket Coach Logo" class="quiz-logo" />
+
+        <div class="quiz-box">
+          <div class="checkmark-animation">
+            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+              <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+              <path class="checkmark-check" fill="none" d="M14 27l7 7 16-16"/>
+            </svg>
+          </div>
+
+          <h2 class="quiz-final-message">
+            Great, this program is made for you.<br><br>
+            ${adviceText}
+          </h2>
+
+          <section class="email-capture">
+            <h2 class="quiz-final-message">One last step: Where should we send your free workout to see if you like it?</h2>
+            <form id="quizForm" class="js-zapform" action="#" method="POST">
+              <input type="email" name="email" placeholder="Enter your email" required class="quiz-email-input" />
+              <input type="hidden" name="goal" id="goalInput" />
+              <input type="hidden" name="frequency" id="frequencyInput" />
+              <input type="hidden" name="interest" id="interestInput" />
+
+              <div class="consent-container">
+                <label>
+                  <input type="checkbox" id="consentCheckbox" required />
+                  I agree that my data will be used to contact me as described in the
+                  <a href="privacy.html" target="_blank">Privacy Policy</a>.
+                </label>
+              </div>
+
+              <div id="consentError" class="consent-error">You must agree before submitting.</div>
+              <button type="submit" class="quiz-cta-btn">Get Free Workout</button>
+            </form>
+          </section>
+        </div>
+      `;
+    }
+  </script>
+
+  <footer class="footer">
+    © 2025 Pocket Coach | All Rights Reserved | Built by 
+    <a href="https://sites.google.com/986productions.online/mauricecreating" target="_blank">MauriceCreating</a>
+    | <a href="privacy.html" target="_blank">Privacy Policy</a> | <a href="datenschutz.html" target="_blank">Datenschutz</a>
+  </footer>
+
+  <script>
+    console.log("🔥 Inline-Script ausgeführt");
+  </script>
+
+  <!-- formhandler.js wird geladen -->
+  <script src="formhandler.js?cachebust=" + new Date().getTime()></script>
+
+  <script>
+    console.log("🔥 formhandler.js sollte jetzt geladen sein.");
+  </script>
+
+</body>
+</html>
