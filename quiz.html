@@ -25,8 +25,9 @@
   </div>
 
   <script>
+    // Mache answers zu einer globalen Variable, damit formhandler.js darauf zugreifen kann
+    var answers = {};
     let step = 0;
-    let answers = {};
 
     function updateProgress(forced) {
       const progressBar = document.getElementById("progressBar");
@@ -64,52 +65,60 @@
     }
 
     function showCTA() {
-      document.getElementById("progressContainer").style.display = "none";
+  document.getElementById("progressContainer").style.display = "none";
 
-      const frequencyText = answers.frequency;
-      const adviceText = frequencyText === "6+x"
-        ? `Wow, you train ${frequencyText.toLowerCase()} per week – that's impressive! Just remember: your body also needs recovery to grow.`
-        : `You train ${frequencyText.toLowerCase()} per week – that's already a great step! We recommend doing something for your body every day – consistency is key 💪`;
+  const frequencyText = answers.frequency;
+  const adviceText = frequencyText === "6+x"
+    ? `Wow, you train ${frequencyText.toLowerCase()} per week – that's impressive! Just remember: your body also needs recovery to grow.`
+    : `You train ${frequencyText.toLowerCase()} per week – that's already a great step! We recommend doing something for your body every day – consistency is key 💪`;
 
-      document.getElementById("quizWrapper").innerHTML = `
-        <img src="logo.png" alt="Pocket Coach Logo" class="quiz-logo" />
+  document.getElementById("quizWrapper").innerHTML = `
+    <img src="logo.png" alt="Pocket Coach Logo" class="quiz-logo" />
 
-        <div class="quiz-box">
-          <div class="checkmark-animation">
-            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
-              <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
-              <path class="checkmark-check" fill="none" d="M14 27l7 7 16-16"/>
-            </svg>
+    <div class="quiz-box">
+      <div class="checkmark-animation">
+        <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+          <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+          <path class="checkmark-check" fill="none" d="M14 27l7 7 16-16"/>
+        </svg>
+      </div>
+
+      <h2 class="quiz-final-message">
+        Great, this program is made for you.<br><br>
+        ${adviceText}
+      </h2>
+
+      <section class="email-capture">
+        <h2 class="quiz-final-message">One last step: Where should we send your free workout to see if you like it?</h2>
+        <form id="quizForm" class="js-zapform" action="#" method="POST">
+          <input type="email" name="email" placeholder="Enter your email" required class="quiz-email-input" />
+          <input type="hidden" name="goal" id="goalInput" value="${answers.goal || ''}" />
+          <input type="hidden" name="frequency" id="frequencyInput" value="${answers.frequency || ''}" />
+          <input type="hidden" name="interest" id="interestInput" value="${answers.interest || ''}" />
+          
+          <div class="consent-container">
+            <label>
+              <input type="checkbox" id="consentCheckbox" required />
+              I agree that my data will be used to contact me as described in the
+              <a href="privacy.html" target="_blank">Privacy Policy</a>.
+            </label>
           </div>
 
-          <h2 class="quiz-final-message">
-            Great, this program is made for you.<br><br>
-            ${adviceText}
-          </h2>
+          <div id="consentError" class="consent-error">You must agree before submitting.</div>
+          <button type="submit" class="quiz-cta-btn">Get Free Workout</button>
+        </form>
+      </section>
+    </div>
+  `;
 
-          <section class="email-capture">
-            <h2 class="quiz-final-message">One last step: Where should we send your free workout to see if you like it?</h2>
-            <form id="quizForm" class="js-zapform" action="#" method="POST">
-              <input type="email" name="email" placeholder="Enter your email" required class="quiz-email-input" />
-              <input type="hidden" name="goal" id="goalInput" />
-              <input type="hidden" name="frequency" id="frequencyInput" />
-              <input type="hidden" name="interest" id="interestInput" />
+  // Debug: Check hidden input values
+  console.log("💾 Hidden input values set:", {
+    goal: answers.goal,
+    frequency: answers.frequency,
+    interest: answers.interest
+  });
+}
 
-              <div class="consent-container">
-                <label>
-                  <input type="checkbox" id="consentCheckbox" required />
-                  I agree that my data will be used to contact me as described in the
-                  <a href="privacy.html" target="_blank">Privacy Policy</a>.
-                </label>
-              </div>
-
-              <div id="consentError" class="consent-error">You must agree before submitting.</div>
-              <button type="submit" class="quiz-cta-btn">Get Free Workout</button>
-            </form>
-          </section>
-        </div>
-      `;
-    }
   </script>
 
   <footer class="footer">
@@ -118,15 +127,12 @@
     | <a href="privacy.html" target="_blank">Privacy Policy</a> | <a href="datenschutz.html" target="_blank">Datenschutz</a>
   </footer>
 
-  <script>
-    console.log("🔥 Inline-Script ausgeführt");
-  </script>
-
-  <!-- formhandler.js wird geladen -->
-  <script src="formhandler.js?cachebust=" + new Date().getTime()></script>
+  <!-- formhandler.js wird VOR dem inline-script geladen -->
+  <script src="formhandler.js"></script>
 
   <script>
-    console.log("🔥 formhandler.js sollte jetzt geladen sein.");
+    console.log("🔥 Quiz-Seite vollständig geladen");
+    console.log("🔥 Verfügbare answers:", answers);
   </script>
 
 </body>

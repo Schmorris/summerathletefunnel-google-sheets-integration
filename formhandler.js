@@ -2,10 +2,11 @@
 
 console.log("🔥 formhandler.js – Startpunkt erreicht");
 
+const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxXESVn1gfNsKIWJGoKpspHCWKYDQaey1eJXAZfRAHXNYR0pLL4P7nqLpXTI1VLx0D-iQ/exec";
+
 document.addEventListener("DOMContentLoaded", () => {
   console.log("🔥 DOMContentLoaded wurde ausgelöst.");
 
-  // Überwache das DOM auf neue Formulare mit der Klasse "js-zapform"
   const observer = new MutationObserver(() => {
     const forms = document.querySelectorAll("form.js-zapform");
 
@@ -15,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!form.dataset.listenerAdded) {
         console.log("Formular gefunden und Event Listener hinzugefügt:", form);
         form.onsubmit = handleFormSubmit;
-        form.dataset.listenerAdded = "true"; // Verhindert doppelte Registrierung
+        form.dataset.listenerAdded = "true";
       }
     });
   });
@@ -23,75 +24,90 @@ document.addEventListener("DOMContentLoaded", () => {
   observer.observe(document.body, { childList: true, subtree: true });
 });
 
-function injectHiddenData() {
-  console.log("🔍 injectHiddenData() gestartet.");
-
-  const goalInput = document.getElementById("goalInput");
-  const frequencyInput = document.getElementById("frequencyInput");
-  const interestInput = document.getElementById("interestInput");
-
-  if (!goalInput || !frequencyInput || !interestInput) {
-    console.warn("⚠️ Hidden input fields not found!");
-    return;
-  }
-
-  // Setze die Werte der versteckten Felder
-  goalInput.value = answers.goal || "";
-  frequencyInput.value = answers.frequency || "";
-  interestInput.value = answers.interest || "";
-
-  console.log("✅ Data injected:", {
-    goal: goalInput.value,
-    frequency: frequencyInput.value,
-    interest: interestInput.value
-  });
-}
-
 function handleFormSubmit(event) {
   event.preventDefault();
   console.log("🚀 handleFormSubmit() wurde aufgerufen.");
 
   const form = event.target;
-  const email = form.querySelector('input[type="email"]');
-  const consent = form.querySelector('input[type="checkbox"]');
-  const errorBox = form.querySelector('.consent-error');
+  const email = form.querySelector('input[type="email"]')?.value || "";
+  const goal = document.getElementById("goalInput")?.value || "";
+  const frequency = document.getElementById("frequencyInput")?.value || "";
+  const interest = document.getElementById("interestInput")?.value || "";
 
-  if (consent && !consent.checked) {
-    console.warn("⚠️ Consent checkbox ist nicht angehakt.");
-    if (errorBox) errorBox.style.display = 'block';
-    return false;
-  } else {
-    if (errorBox) errorBox.style.display = 'none';
-  }
+  const formData = {
+    email,
+    goal,
+    frequency,
+    interest
+  };
 
-  if (typeof injectHiddenData === "function") {
-    console.log("✅ injectHiddenData() wird ausgeführt.");
-    injectHiddenData();
-  }
+  console.log("📦 Form data before send:", formData);
 
-  const formData = new FormData(form);
-
-  console.log("📦 Form data before send:", {
-    goal: formData.get("goal"),
-    frequency: formData.get("frequency"),
-    interest: formData.get("interest"),
-    email: formData.get("email")
-  });
-
-  fetch("https://hooks.zapier.com/hooks/catch/19943755/2n6n22s/", {
+  fetch(GOOGLE_SHEET_URL, {
     method: "POST",
-    body: formData
+    header: { 
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(formData),
+    mode: "cors"
   })
-    .then(() => {
-      console.log("✅ Form successfully submitted to Zapier.");
+    .then(response => response.json())
+    .then(data => {
+      console.log("✅ Data successfully sent to Google Sheets:", data);
       setTimeout(() => {
-        console.log("🔄 Redirecting to index.html");
         window.location.href = "index.html";
       }, 2000);
     })
-    .catch((err) => {
-      console.error("❌ Form submission failed:", err);
+    .catch(err => {
+      console.error("❌ Data submission failed:", err);
     });
 
   return false;
+}
+
+
+function sendFormData(formData) {
+  return fetch(GOOGLE_SHEET_URL, {
+    method: "POST",
+    mode: "cors", // Explizit CORS-Modus aktivieren
+    credentials: "omit", // Keine Cookies senden
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(formData)
+  })
+  .then(response => {
+    console.log("🌐 Antwort vom Server erhalten:", response);
+    console.log("🌐 Antwort-Status:", response.status);
+    console.log("🌐 Antwort-Headers:", {
+      "Content-Type": response.headers.get("Content-Type"),
+      "Access-Control-Allow-Origin": response.headers.get("Access-Control-Allow-Origin")
+    });
+
+    if (!response.ok) {
+      throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+    }
+
+    return response.json();
+  })
+  .then(data => {
+    console.log("✅ Data successfully sent to Google Sheets:", data);
+    if (data.status === "success") {
+      console.log("✅ Weiterleitung zur Startseite in 2 Sekunden...");
+      setTimeout(() => {
+        window.location.href = "index.html";
+      }, 2000);
+    } else {
+      console.warn("❌ Fehlerhafte Antwort vom Server:", data.message);
+    }
+  })
+  .catch(err => {
+    console.error("❌ Data submission failed:", err);
+    console.error("❌ Detaillierter Fehler:", {
+      message: err.message,
+      stack: err.stack
+    });
+    // Optional: Zeige einen Fehler für den Benutzer an
+    alert("Es gab ein Problem beim Senden deiner Daten. Bitte versuche es später noch einmal.");
+  });
 }
